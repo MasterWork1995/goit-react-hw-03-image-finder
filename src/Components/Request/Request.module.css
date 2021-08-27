@@ -1,0 +1,6 @@
+.text {
+  font-size: 40px;
+  opacity: 0.7;
+
+  box-shadow: 5px -5px 16px 0px #303af2, 5px 15px 27px 0px #3d4fed;
+}
