@@ -27,24 +27,42 @@ class App extends Component {
     const { query, page } = this.state;
 
     if (prevState.query !== query) {
-      this.setState({ status: "pending" });
+      this.setState({ status: "pending", page: 1 });
 
-      pixabayAPI.fetchImage(query, page).then(({ hits, total }) => {
-        this.setState({ images: hits, total, status: "resolved" });
-        if (!total) {
-          this.setState({
-            error: "Something was wrong! Please, change your request!",
-            status: "rejected",
-          });
-        } else {
-          this.setState({ error: null });
-        }
-      });
+      this.firstFetchImages(query, page);
     }
 
     if (prevState.page !== page) {
+      this.nextFetchImages(query, page);
     }
+
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
   }
+
+  firstFetchImages = (query, page) => {
+    pixabayAPI.fetchImage(query, page).then(({ hits, total }) => {
+      this.setState({ images: hits, total, status: "resolved" });
+      if (!total) {
+        this.setState({
+          error: "Something was wrong! Please, change your request!",
+          status: "rejected",
+        });
+      } else {
+        this.setState({ error: null });
+      }
+    });
+  };
+
+  nextFetchImages = (query, page) => {
+    pixabayAPI.fetchImage(query, page).then(({ hits }) => {
+      this.setState((prevState) => ({
+        images: [...prevState.images, ...hits],
+      }));
+    });
+  };
 
   handleFormSubmit = (query) => {
     this.setState({
@@ -57,7 +75,7 @@ class App extends Component {
   };
 
   render() {
-    const { error, status, total } = this.state;
+    const { error, status, total, page } = this.state;
 
     return (
       <>
@@ -72,7 +90,7 @@ class App extends Component {
             {status === "pending" && (
               <Loader type="Watch" color="#00BFFF" height={80} width={80} />
             )}
-            {total >= 12 && <Button onClick={this.handleIncrement} />}
+            {total - page * 12 > 0 && <Button onClick={this.handleIncrement} />}
           </Container>
         </Section>
         <ToastContainer autoClose={3000} />
