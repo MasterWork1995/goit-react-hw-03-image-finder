@@ -117,7 +117,7 @@ class App extends Component {
         </Section>
         {showModal && (
           <Modal onClose={this.closeModal}>
-            <img src={largeURL} alt="" style={{ backgroundColor: "#fff" }} />
+            <img src={largeURL} alt="" />
           </Modal>
         )}
         <ToastContainer autoClose={3000} />
