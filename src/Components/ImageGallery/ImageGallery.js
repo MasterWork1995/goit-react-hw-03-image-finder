@@ -1,7 +1,7 @@
 import ImageGalleryItem from "../ImageGalleryItem";
 import s from "./ImageGallery.module.css";
 
-const ImageGallery = ({ images }) => {
+const ImageGallery = ({ images, openModal }) => {
   return (
     <>
       <ul className={s.ImageGallery}>
@@ -10,6 +10,7 @@ const ImageGallery = ({ images }) => {
             <ImageGalleryItem
               key={id}
               webformatURL={webformatURL}
+              openModal={openModal}
               largeImageURL={largeImageURL}
               tags={tags}
             />

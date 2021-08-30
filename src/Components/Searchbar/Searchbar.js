@@ -1,4 +1,3 @@
-import React from "react";
 import { Component } from "react";
 import s from "./Searchbar.module.css";
 import { toast } from "react-toastify";

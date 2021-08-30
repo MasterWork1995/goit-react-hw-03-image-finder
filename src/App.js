@@ -12,6 +12,7 @@ import Container from "./Components/Container";
 import ErrorMessage from "./Components/ErrorMessage";
 import Request from "./Components/Request";
 import Button from "./Components/Button";
+import Modal from "./Components/Modal";
 
 class App extends Component {
   state = {
@@ -21,10 +22,12 @@ class App extends Component {
     error: null,
     total: null,
     status: "idle",
+    showModal: false,
+    largeURL: "",
   };
 
   componentDidUpdate(prevProps, prevState) {
-    const { query, page } = this.state;
+    const { query, page, showModal } = this.state;
 
     if (prevState.query !== query) {
       this.setState({ status: "pending", page: 1 });
@@ -36,10 +39,12 @@ class App extends Component {
       this.nextFetchImages(query, page);
     }
 
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: "smooth",
-    });
+    if (!showModal && !prevState.showModal) {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    }
   }
 
   firstFetchImages = (query, page) => {
@@ -47,7 +52,7 @@ class App extends Component {
       this.setState({ images: hits, total, status: "resolved" });
       if (!total) {
         this.setState({
-          error: "Something was wrong! Please, change your request!",
+          error: "Something went wrong! Please, change your request!",
           status: "rejected",
         });
       } else {
@@ -74,8 +79,22 @@ class App extends Component {
     this.setState({ page: this.state.page + 1 });
   };
 
+  openModal = (url) => {
+    this.setState(({ showModal }) => ({
+      showModal: !showModal,
+      largeURL: url,
+    }));
+  };
+
+  closeModal = () => {
+    this.setState(({ showModal }) => ({
+      showModal: !showModal,
+      largeURL: "",
+    }));
+  };
+
   render() {
-    const { error, status, total, page } = this.state;
+    const { error, status, total, page, showModal, largeURL } = this.state;
 
     return (
       <>
@@ -85,7 +104,10 @@ class App extends Component {
             {status === "idle" && <Request />}
             {status === "rejected" && <ErrorMessage message={error} />}
             {status === "resolved" && (
-              <ImageGallery images={this.state.images} />
+              <ImageGallery
+                images={this.state.images}
+                openModal={this.openModal}
+              />
             )}
             {status === "pending" && (
               <Loader type="Watch" color="#00BFFF" height={80} width={80} />
@@ -93,6 +115,11 @@ class App extends Component {
             {total - page * 12 > 0 && <Button onClick={this.handleIncrement} />}
           </Container>
         </Section>
+        {showModal && (
+          <Modal onClose={this.closeModal}>
+            <img src={largeURL} alt="" style={{ backgroundColor: "#fff" }} />
+          </Modal>
+        )}
         <ToastContainer autoClose={3000} />
       </>
     );
