@@ -30,12 +30,12 @@ class App extends Component {
     const { query, page, showModal } = this.state;
 
     if (prevState.query !== query) {
-      this.setState({ status: "pending", page: 1 });
+      this.setState({ status: "pending" });
 
       this.firstFetchImages(query, page);
     }
 
-    if (prevState.page !== page) {
+    if (prevState.page !== page && page !== 1) {
       this.nextFetchImages(query, page);
     }
 
@@ -72,6 +72,7 @@ class App extends Component {
   handleFormSubmit = (query) => {
     this.setState({
       query,
+      page: 1,
     });
   };
 
